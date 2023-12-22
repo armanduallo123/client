@@ -1,0 +1,371 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package borrowingbooks;
+
+import General.ConnectionProvider;
+import General.Utils;
+import java.awt.print.PrinterException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+
+/**
+ *
+ * @author Dell
+ */
+public class HistoryOfBooks extends javax.swing.JFrame {
+       
+      
+    /**
+     * Creates new form HistoryOfBooks
+     */
+    public HistoryOfBooks() {
+        initComponents();
+        this.showBookLibrarySystem();
+    }
+      public void showBookLibrarySystem(){
+         try {
+            // Create the SQL query with placeholders
+            String getQuery = "SELECT * FROM library_table";
+           
+
+            // Create a connection
+            ConnectionProvider dbc = new ConnectionProvider();
+            String jdbcDriver = dbc.getJdbcDriver();
+            String dbConnectionURL = dbc.getDbConnectionURL();
+            String dbUsername = dbc.getDbUsername();
+            String dbPassword = dbc.getDbPassword();
+            Class.forName(jdbcDriver);
+            Connection connection = DriverManager.getConnection(dbConnectionURL, dbUsername, dbPassword);
+
+            // Create the PreparedStatement
+            PreparedStatement statement = connection.prepareStatement(getQuery);
+
+           
+            ResultSet resultSet = statement.executeQuery();
+    
+    // Process the result set as needed
+    if (resultSet.next()) {
+         // Create a table model to store data
+        DefaultTableModel tableModel = new DefaultTableModel();
+           // Override isCellEditable method to make all cells non-editable
+            tableModel = new DefaultTableModel() {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    // Make all cells non-editable
+                    return false;
+                }
+            };
+        jTable1.setModel(tableModel);
+          
+         
+         
+             // Set the row height
+            int rowHeight = 30; // Set your desired row height
+            this.jTable1.setRowHeight(rowHeight);
+            
+           
+           
+
+       // Get column names and add them to the table model
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
+            String columnName = metaData.getColumnName(i);
+            if (columnName.equals("Student_id") || columnName.equals("Last_Name") ||
+                    columnName.equals("First_Name") || columnName.equals("Middle_Name") || columnName.equals("Phone_Number")
+                    || columnName.equals("Gender") || columnName.equals("Section") || columnName.equals("Book_Name") 
+                    || columnName.equals("Book_Number") || columnName.equals("Date_Borrowed") || columnName.equals("Time_Borrowed") || columnName.equals("Date_Returned")
+                    || columnName.equals("Time_Returned")|| columnName.equals("Book_Status")|| columnName.equals("imageIcon")) {
+                
+                tableModel.addColumn(columnName);
+               
+            }else {
+              System.out.println("No matching records found.");
+              JOptionPane.showMessageDialog(this, "No record found!");
+         }
+     }
+
+        // Add rows to the table model
+        do {
+            Object[] rowData = new Object[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                rowData[i - 1] = resultSet.getObject(i);
+            }
+            tableModel.addRow(rowData);
+        } while (resultSet.next());
+
+    } 
+
+    // Close resources
+    resultSet.close();
+    statement.close();
+    connection.close();
+
+            System.out.println("Retrieved Successfully!");
+         
+        } catch (ClassNotFoundException | SQLException e) {
+          JOptionPane.showMessageDialog(this, "Your MySQL has an Error");
+          e.printStackTrace();
+        }
+        TableColumnModel columnModel = this.jTable1.getColumnModel();
+         TableColumn columnToZero = columnModel.getColumn(14);
+         columnToZero.setMinWidth(0);
+         columnToZero.setMaxWidth(0);
+         columnToZero.setPreferredWidth(0);
+         columnToZero.setWidth(0);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jButton3 = new javax.swing.JButton();
+        searchTF = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jButton5 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1200, 700));
+        setResizable(false);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel1.setBackground(new java.awt.Color(0, 102, 102));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "BookId", "Book_Name", "Book Limits", "Book Price", "Book Author"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 1150, 470));
+
+        jButton3.setText("Search");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 130, 80, 30));
+        jPanel1.add(searchTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 130, 180, 30));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("History of Borrowers");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 20, 450, -1));
+
+        jButton5.setText("BACK");
+        jButton5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 60, 30));
+
+        jButton1.setText("PRINT REPORT");
+        jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 130, 110, 30));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1190, 660));
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        BookBorrowers book = new BookBorrowers();
+        book.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+           // TODO add your handling code here:
+        try {
+            // Create the SQL query with placeholders
+            String searchQuery = "SELECT * FROM library_table WHERE Student_id LIKE ? OR Last_Name LIKE ? OR First_Name LIKE ? OR Middle_Name LIKE ? OR Phone_Number LIKE ? OR Gender LIKE ? OR Section LIKE ? OR Book_Name LIKE ? OR Book_Number LIKE ? OR Date_Borrowed LIKE ? OR Time_Borrowed LIKE ? OR Date_Returned LIKE ? OR Time_Returned LIKE ? OR Book_Status LIKE ?";
+
+            // Create a connection
+            ConnectionProvider dbc = new ConnectionProvider();
+            String jdbcDriver = dbc.getJdbcDriver();
+            String dbConnectionURL = dbc.getDbConnectionURL();
+            String dbUsername = dbc.getDbUsername();
+            String dbPassword = dbc.getDbPassword();
+            Class.forName(jdbcDriver);
+            Connection connection = DriverManager.getConnection(dbConnectionURL, dbUsername, dbPassword);
+
+            // Create the PreparedStatement
+            PreparedStatement statement = connection.prepareStatement(searchQuery);
+
+            // Set search parameters
+            String searchKeyword = "%" + searchTF.getText() + "%";
+
+            for (int i = 1; i <= 14; i++) {
+                statement.setString(i, searchKeyword);
+            }
+
+            // Execute the query
+            ResultSet resultSet = statement.executeQuery();
+
+            // Process the result set as needed
+            if (resultSet.next()) {
+                
+
+                // Create a table model to store data
+                DefaultTableModel tableModel = new DefaultTableModel();
+                // Override isCellEditable method to make all cells non-editable
+                tableModel = new DefaultTableModel() {
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        // Make all cells non-editable
+                        return false;
+                    }
+                };
+                jTable1.setModel(tableModel);
+
+                // Set the row height
+                int rowHeight = 30; // Set your desired row height
+                this.jTable1.setRowHeight(rowHeight);
+
+                // Get column names and add them to the table model
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnName = metaData.getColumnName(i);
+                    if (columnName.equals("Student_id")
+                        || columnName.equals("Last_Name")
+                        || columnName.equals("First_Name")
+                        || columnName.equals("Middle_Name")
+                        || columnName.equals("Phone_Number")
+                        || columnName.equals("Gender")
+                        || columnName.equals("Section")
+                        || columnName.equals("Book_Name")
+                        || columnName.equals("Book_Number")
+                        || columnName.equals("Date_Borrowed")
+                        || columnName.equals("Time_Borrowed")
+                        || columnName.equals("Date_Returned")
+                        || columnName.equals("Time_Returned")
+                        || columnName.equals("Book_Status")
+                        || columnName.equals("imageIcon")) {
+                        
+                        tableModel.addColumn(columnName);
+                    }
+                    else {
+                        System.out.println("No matching records found.");
+                        JOptionPane.showMessageDialog(this, "No record found!");
+                    }
+                }
+
+                // Add rows to the table model
+                do {
+                    Object[] rowData = new Object[columnCount];
+                    for (int i = 1; i <= columnCount; i++) {
+                        rowData[i - 1] = resultSet.getObject(i);
+                    }
+                    tableModel.addRow(rowData);
+                } while (resultSet.next());
+
+            }
+
+            // Close resources
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (ClassNotFoundException | SQLException e) {
+            JOptionPane.showMessageDialog(this, "Your MySQL has an Error");
+            e.printStackTrace();
+        }
+        TableColumnModel columnModel = this.jTable1.getColumnModel();
+        TableColumn columnToZero = columnModel.getColumn(14);
+        columnToZero.setMinWidth(0);
+        columnToZero.setMaxWidth(0);
+        columnToZero.setPreferredWidth(0);
+        columnToZero.setWidth(0);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+          
+        try {
+              Utils.printTable(jTable1);
+              
+          } catch (PrinterException ex) {
+              Logger.getLogger(BookListLog.class.getName()).log(Level.SEVERE, null, ex);
+          }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(HistoryOfBooks.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(HistoryOfBooks.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(HistoryOfBooks.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(HistoryOfBooks.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new HistoryOfBooks().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTextField searchTF;
+    // End of variables declaration//GEN-END:variables
+}
